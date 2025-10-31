@@ -2,6 +2,8 @@
 
 A full-stack note-taking application with rate limiting and modern architecture.
 
+🌐 **Live Demo:** [https://thinkpad-3g1j.onrender.com/](https://thinkpad-3g1j.onrender.com/)
+
 ## Overview
 
 This project is a modern note-taking application built with React and Node.js, featuring a responsive user interface and robust backend architecture. The application allows users to create, view, and manage notes with built-in rate limiting protection.
