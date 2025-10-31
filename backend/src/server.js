@@ -1,22 +1,28 @@
-import express from 'express'
-import cors from 'cors';
-import dotenv from 'dotenv';
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import path from "path";
 
-import notesRoutes from './routes/notesRoutes.js'
-import { connect } from 'mongoose';
-import { connectDB } from './config/db.js';
-import rateLimiter from './middleware/rateLimiter.js';
+import notesRoutes from "./routes/notesRoutes.js";
+import { connect } from "mongoose";
+import { connectDB } from "./config/db.js";
+import rateLimiter from "./middleware/rateLimiter.js";
 
 dotenv.config();
 
 const PORT = process.env.PORT || 5001;
 const app = express();
 
+const __dirname = path.resolve();
 
 // middleware
-app.use(cors({
-    origin:"http://localhost:5173"
-}));
+if(process.env.NODE_ENV !== "production"){
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+  })
+);
+}
 app.use(express.json()); //this middleware will parse JSON bodies : req.body
 app.use(rateLimiter);
 
@@ -27,26 +33,24 @@ app.use(rateLimiter);
 // })
 
 // routes
-app.use("/api/notes",notesRoutes)
+app.use("/api/notes", notesRoutes);
 
-connectDB().then(()=>{
+// serve frontend
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
+  });
+}
 
-//route or endpoint 
-// endpoint is a combination of a URL + HTTP method that lets the client interact
-// with a specific resource.
+connectDB().then(() => {
+  //route or endpoint
+  // endpoint is a combination of a URL + HTTP method that lets the client interact
+  // with a specific resource.
 
-// https://localhost:5001/api/notes/21
+  // https://localhost:5001/api/notes/21
 
-app.listen(PORT,()=>{
-    console.log("server is runninng on port:",PORT);
-})
-
-})
-
-
-
-
-
-
-
-
+  app.listen(PORT, () => {
+    console.log("server is runninng on port:", PORT);
+  });
+});
